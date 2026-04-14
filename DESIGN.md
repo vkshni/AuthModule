@@ -55,3 +55,23 @@ Command Line Interface (CLI)
 - Token expired
 - User already exists
 - Validation errors
+
+## Files and their contents
+
+### Models
+- `user.py`
+    ```python
+    class User:
+        def init():
+        def to_dict():
+        def from_dict():
+    ```
+### Core
+- `passwords.py`
+Uses bcrypt hashing
+    ```python
+    def hash_password():
+    def verify_password():
+    ```
+
+    
