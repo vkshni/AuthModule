@@ -6,6 +6,11 @@
 - **Create a `DESIGN.md` file** ✅  
 - **Git Initialization** ✅  
 
+# Day 2 - Core foundation
+- **User model** ✅
+- **Passwords hashing/verification** ✅
+- **Storage** 
+
 ---
 
 # Week schedule
