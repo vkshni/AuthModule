@@ -58,20 +58,32 @@ Command Line Interface (CLI)
 
 ## Files and their contents
 
-### Models
+### Models/
 - `user.py`
     ```python
     class User:
-        def init():
-        def to_dict():
-        def from_dict():
+        def __init__():
+        def to_dict() -> dict:
+        def from_dict(user_dict) -> 'User':
+        def __str__() -> str:
     ```
-### Core
+### Core/
 - `passwords.py`
 Uses bcrypt hashing
     ```python
-    def hash_password():
-    def verify_password():
+    def hash_password(plain_password) -> str | bool:
+    def verify_password(plain_password, hashed) -> bool:
     ```
+### Storage/
+- `user_db.py`
+    ```python
+    class UserDB:
+        def __init__():
+        def _get_connection() -> Connection:
+        def create_table() -> bool:
+        def add_user(user: User) -> bool:
+        def get_user_by_email(email) -> User | bool | None:
+        def get_user_by_id(id) -> User | bool | None:
+        def email_exists(email) -> bool:
 
     
