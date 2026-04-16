@@ -9,7 +9,9 @@
 # Day 2 - Core foundation
 - **User model** ✅
 - **Passwords hashing/verification** ✅
-- **Storage** 
+- **Storage** ✅
+
+# Day 3 - Auth Logic
 
 ---
 
