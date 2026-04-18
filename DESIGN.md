@@ -68,6 +68,19 @@ Command Line Interface (CLI)
         def __str__() -> str:
     ```
 ### Core/
+- `auth.py`
+    ```python
+    class AuthService:
+        def __init__():
+        def register(email, password, role) -> tuple[bool,str]:
+        def login(email, password) -> tuple[bool, str]:
+        def verify_credentials(email, password) -> tuple[bool, str]:
+
+- `tokens.py`
+    ```python
+    def generate_token(user: User) -> bool | str:
+    def verify_token(token) -> bool | str:
+        
 - `passwords.py`
 Uses bcrypt hashing
     ```python
