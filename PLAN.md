@@ -12,6 +12,13 @@
 - **Storage** ✅
 
 # Day 3 - Auth Logic
+- **Register, login and verify_credential methods**
+
+# Day 4 - JWT Tokens
+- **generate_token()**
+- **verify_token()**
+
+# Day 5 - 
 
 ---
 
