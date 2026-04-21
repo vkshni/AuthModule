@@ -10,23 +10,31 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Project modules
-from passwords import hash_password, verify_password
+from core.passwords import hash_password, verify_password
+from validators.validators import validate_email, validate_password
+from core.tokens import generate_token
 from storage.user_db import UserDB
 from models.user import User
-
-
-# UserDB
-# userdb = UserDB()
-# userdb.create_table()
 
 
 class AuthService:
 
     def __init__(self, user_db: UserDB):
         self.user_db = user_db
+        self.user_db.create_table()
 
     # Register User (first-time)
     def register(self, email: str, password: str, role: str = "USER"):
+
+        # Validate email
+        is_valid, error_msg = validate_email(email)
+        if not is_valid:
+            return (False, error_msg)
+
+        # Validate password
+        is_valid, error_msg = validate_password(password)
+        if not is_valid:
+            return (False, error_msg)
 
         existing = self.user_db.get_user_by_email(email)
         if existing:
@@ -43,27 +51,27 @@ class AuthService:
 
         existing = self.user_db.get_user_by_email(email)
         if not existing:
-            return (False, f"No user found with email '{email}'")
+            return (False, "Invalid credentials")
 
         is_authenticate = verify_password(password, existing.password_hash)
         if is_authenticate:
-            # JWT Token logic
-            return (True, "token")
+            token = generate_token(existing)
+            return (True, token)
 
-        return (False, "Incorrect password")
+        return (False, "Invalid credentials")
 
     # Verify credentials
     def verify_credentials(self, email: str, password: str):
 
         existing = self.user_db.get_user_by_email(email)
         if not existing:
-            return (False, f"No user found with email '{email}'")
+            return (False, "Invalid credentials")
 
         is_authenticate = verify_password(password, existing.password_hash)
         if is_authenticate:
             return (True, "")
 
-        return (False, "Incorrect password")
+        return (False, "Invalid credentials")
 
 
 if __name__ == "__main__":
