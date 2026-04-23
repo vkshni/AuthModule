@@ -19,16 +19,8 @@
 - **verify_token()** ✅
 - **validate_email() and validate_password()** ✅
 
-# Day 5 - CLI Interface
-- **register, login, verify commandd**
+# Day 5 - CLI Interface ✅
+- **register, login, verify commandd** ✅
 
----
-
-# Week schedule
-Day 1: Design ✅  
-Day 2: Core (hash, user model, storage)   
-Day 3: Auth logic (register, login)   
-Day 4: JWT tokens   
-Day 5: Middleware   
-Day 6: Validators + error handling    
-Day 7: Tests + README    
+# Day 6 - Testing ✅
+- **Test suite for all modules** ✅
