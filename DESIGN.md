@@ -1,102 +1,159 @@
 # AuthModule - DESIGN DOCUMENT
 
 ## Overview
-### About
-Autharization module that can be integrated in any real world system
 
-### Core features
-- User Registration/login (Multi-user)
-- Password hashing
-- Token payload structure (JWT)
-- Basic middleware
-- Framework agnostic
+AuthModule is a lightweight, framework-agnostic authentication library for Python applications. It provides user registration, secure password handling, JWT token issuance and verification, SQLite-backed persistence, and simple middleware for protecting routes.
+
+## Core Features
+
+- User registration with email validation
+- Password hashing and verification using `bcrypt`
+- JWT token creation and validation via `PyJWT`
+- SQLite persistence for users stored in `data/users.db`
+- Basic middleware for token-based route protection
+- Input validation for email and password strength
 
 ## Architecture
-```bash
+
+```
 auth-module/
 ├── core/
-│   ├── auth.py          # Main auth logic
-│   ├── tokens.py        # JWT generation/validation
-│   └── passwords.py     # Hashing/verification
+│   ├── auth.py          # Main auth logic and workflows
+│   ├── tokens.py        # JWT generation and verification
+│   └── passwords.py     # Password hashing and verification
 ├── models/
-│   └── user.py          # User entity
+│   └── user.py          # User entity and serialization
 ├── storage/
-│   └── user_db.py       # User persistence
+│   └── user_db.py       # SQLite persistence for users
 ├── middleware/
-│   └── auth_middleware.py  # Protect routes
+│   └── auth_middleware.py  # Token validation helper for protected routes
 ├── validators/
-│   └── validators.py    # Input validation
-├── config/
-│   └── settings.py      # Environment config
-└── tests/
+│   └── validators.py    # Email and password validation
+├── data/
+│   └── users.db         # Database file created at runtime
+├── tests/
+│   └── ...              # Unit tests
+├── README.md
+└── DESIGN.md
 ```
 
-## Data models
-- User schema (id, name, password_hash, created_at, role)
-- Token Payload Structure
+## Data Models
+
+### User
+
+The `User` entity consists of:
+- `id`: UUID string primary key
+- `email`: email address
+- `password_hash`: bcrypt hashed password
+- `created_at`: timestamp string
+- `role`: user role (default `USER`)
+
+The `User` model supports:
+- `to_dict()` for database serialization
+- `from_dict()` for deserialization
 
 ## Security Decisions
-- Hashing algorithm: bcrypt
-- Token type: JWT
-- Token expiry: 1 hour
-- Password requirements: min 8 chars, 1 letter, 1 number
-- Storage: SQLite 
 
-## Interface layer
-Command Line Interface (CLI)
+- Hashing algorithm: `bcrypt`
+- Token type: JWT
+- Token algorithm: `HS256`
+- Token expiry: 1 hour
+- Password requirements: minimum 8 characters, at least one letter, at least one number
+- Storage: SQLite
 
 ## Configuration
-- Environment variables: SECRET_KEY, TOKEN_EXPIRY
-- Default settings
-- Security best practices
 
-##  Error Handling
-- Invalid credentials
-- Token expired
-- User already exists
-- Validation errors
+The project supports environment-based secret configuration:
 
-## Files and their contents
+- `JWT_SECRET_KEY` — JWT signing secret
 
-### Models/
-- `user.py`
-    ```python
-    class User:
-        def __init__():
-        def to_dict() -> dict:
-        def from_dict(user_dict) -> 'User':
-        def __str__() -> str:
-    ```
-### Core/
-- `auth.py`
-    ```python
-    class AuthService:
-        def __init__():
-        def register(email, password, role) -> tuple[bool,str]:
-        def login(email, password) -> tuple[bool, str]:
-        def verify_credentials(email, password) -> tuple[bool, str]:
+If unset, the default secret is `dev-secret-only`, intended only for development.
 
-- `tokens.py`
-    ```python
-    def generate_token(user: User) -> bool | str:
-    def verify_token(token) -> bool | str:
-        
-- `passwords.py`
-Uses bcrypt hashing
-    ```python
-    def hash_password(plain_password) -> str | bool:
-    def verify_password(plain_password, hashed) -> bool:
-    ```
-### Storage/
-- `user_db.py`
-    ```python
-    class UserDB:
-        def __init__():
-        def _get_connection() -> Connection:
-        def create_table() -> bool:
-        def add_user(user: User) -> bool:
-        def get_user_by_email(email) -> User | bool | None:
-        def get_user_by_id(id) -> User | bool | None:
-        def email_exists(email) -> bool:
+## Validation Rules
 
-    
+### Email
+
+- Must not be empty
+- Must match a standard email regular expression
+
+### Password
+
+- Minimum length: 8 characters
+- Must include at least one numeric digit
+- Must include at least one alphabetic character
+
+## Components
+
+### `core/auth.py`
+
+Handles:
+- user registration
+- login
+- credential verification
+
+Registration workflow:
+- validate email
+- validate password
+- ensure email is unique
+- hash password
+- create and persist a new user
+
+Login workflow:
+- retrieve user by email
+- verify password
+- generate JWT token on success
+
+### `core/tokens.py`
+
+Handles JWT creation and verification.
+
+Token payload includes:
+- `sub`: user id
+- `email`
+- `role`
+- `iat`
+- `exp`
+
+If verification fails, it returns explicit failure reasons such as `Token expired` or `Invalid token`.
+
+### `core/passwords.py`
+
+Handles password hashing and verification using `bcrypt`.
+
+### `storage/user_db.py`
+
+Handles SQLite persistence using a `user` table with columns:
+- `id`
+- `email`
+- `password_hash`
+- `created_at`
+- `role`
+
+Supports:
+- creating the table
+- inserting users
+- retrieving users by email or id
+- checking whether an email exists
+
+### `middleware/auth_middleware.py`
+
+Provides a helper function `protect_route(token)` to validate a JWT and return user context.
+
+## Error Handling
+
+Common error flows include:
+- invalid email format
+- weak password
+- duplicate email registration
+- invalid login credentials
+- expired or invalid JWT token
+
+## Testing
+
+Unit tests live in the `tests/` folder and should cover the auth flows, validators, storage, token handling, and middleware.
+
+## Notes
+
+- The project currently uses a local SQLite store and is suited for development or small-scale applications.
+- For production, replace the default JWT secret and consider using a more robust persistence layer.
+ - DESIGN DOCUMENT
