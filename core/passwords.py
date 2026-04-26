@@ -5,16 +5,22 @@ from bcrypt import gensalt, hashpw, checkpw
 
 
 # Hashing
-def hash_password(plain_password: str) -> str:
+def hash_password(plain_password: str) -> str | bool:
 
-    hashed = hashpw(plain_password.encode(), gensalt())
-    return hashed
+    try:
+        hashed = hashpw(plain_password.encode(), gensalt())
+        return hashed.decode()
+    except:
+        return False
 
 
 # Verification
 def verify_password(plain_password: str, hashed: str) -> bool:
 
-    return checkpw(plain_password.encode(), hashed)
+    try:
+        return checkpw(plain_password.encode(), hashed.encode())
+    except:
+        return False
 
 
 if __name__ == "__main__":
