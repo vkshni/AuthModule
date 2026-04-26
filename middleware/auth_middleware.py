@@ -1,7 +1,6 @@
 # Middleware
 
 from pathlib import Path
-from datetime import datetime, timezone
 import sys
 
 # Adding PROJECT ROOT to the Python Path
